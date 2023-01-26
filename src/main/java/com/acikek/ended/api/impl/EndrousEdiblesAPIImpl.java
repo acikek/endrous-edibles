@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,11 +34,11 @@ public class EndrousEdiblesAPIImpl {
     }
 
     public static Edible getEdibleById(Identifier id) {
-        Edible edible = allEdibles.get(id);
-        if (edible == null) {
-            throw new IllegalArgumentException("'" + id + "' is not a valid edible");
-        }
-        return edible;
+        return allEdibles.get(id);
+    }
+
+    public static List<Edible> getEdibles() {
+        return allEdibles.values().stream().toList();
     }
 
     public static Optional<Edible> getEdibleFromItem(Item item) {

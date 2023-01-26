@@ -4,6 +4,7 @@ import com.acikek.ended.api.EndrousEdiblesAPI;
 import com.acikek.ended.api.builder.DestinationBuilder;
 import com.acikek.ended.api.builder.EdibleBuilder;
 import com.acikek.ended.api.builder.RuleBuilder;
+import com.acikek.ended.command.EdibleCommand;
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.load.EdibleLoader;
 import net.fabricmc.api.ModInitializer;
@@ -41,5 +42,6 @@ public class EndrousEdibles implements ModInitializer {
 
         LOGGER.info("Thanks for getting a taste of Endrous Edibles!");
         EdibleLoader.register();
+        EdibleCommand.register();
     }
 }

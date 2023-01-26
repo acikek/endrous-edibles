@@ -51,7 +51,6 @@ public class EdibleLoader extends JsonDataLoader implements IdentifiableResource
         EndrousEdiblesAPIImpl.refreshAllEdibles();
         lastReloadTime = System.currentTimeMillis();
         EndrousEdibles.LOGGER.info("Loaded " + loaded + " endrous edible" + (loaded != 1 ? "s" : ""));
-        System.out.println(loadedEdibles);
     }
 
     public static void register() {

@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
 public class EndrousEdiblesAPI {
@@ -18,10 +19,17 @@ public class EndrousEdiblesAPI {
     }
 
     /**
-     * @throws IllegalArgumentException if the edible does not exist
+     * @return the edible if found, or {@code null} if not
      */
     public static Edible getEdibleById(Identifier id) {
         return EndrousEdiblesAPIImpl.getEdibleById(id);
+    }
+
+    /**
+     * @return all registered edibles, both loaded from JSON and registered via {@link EndrousEdiblesAPI#registerEdible(Edible)}
+     */
+    public static List<Edible> getEdibles() {
+        return EndrousEdiblesAPIImpl.getEdibles();
     }
 
     /**
