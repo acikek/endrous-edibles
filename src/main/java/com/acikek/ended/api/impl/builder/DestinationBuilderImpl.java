@@ -54,8 +54,8 @@ public class DestinationBuilderImpl implements DestinationBuilder {
     }
 
     @Override
-    public Destination build() {
-        if (type == null) {
+    public Destination build(boolean isDefault) {
+        if (type == null && !isDefault) {
             throw new IllegalStateException("No location type specified for destination");
         }
         return new Destination(new Location(type, pos, world), message);

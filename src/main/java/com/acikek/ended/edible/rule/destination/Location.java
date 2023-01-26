@@ -62,11 +62,4 @@ public record Location(Type type, BlockPos pos, RegistryKey<World> world) {
         }
         return RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(obj, "world")));
     }
-
-    public static Location fromJson(boolean isDefault, Location defaultLocation, JsonObject obj) {
-        Type type = typeFromJson(isDefault, defaultLocation, obj);
-        BlockPos pos = type == Type.POSITION ? getBlockPos(obj) : null;
-        RegistryKey<World> world = worldFromJson(defaultLocation, obj);
-        return new Location(type, pos, world);
-    }
 }

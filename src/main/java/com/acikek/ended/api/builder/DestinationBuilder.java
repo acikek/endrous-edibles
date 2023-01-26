@@ -58,5 +58,13 @@ public interface DestinationBuilder {
      */
     DestinationBuilder message(Text text);
 
-    Destination build();
+    /**
+     * @deprecated use {@link DestinationBuilder#build()}
+     * @param isDefault whether to check for a valid location type
+     */
+    Destination build(boolean isDefault);
+
+    default Destination build() {
+        return build(false);
+    }
 }

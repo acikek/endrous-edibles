@@ -2,9 +2,11 @@ package com.acikek.ended.api.builder;
 
 import com.acikek.ended.api.impl.builder.RuleBuilderImpl;
 import com.acikek.ended.edible.rule.EdibleRule;
+import com.acikek.ended.edible.rule.WorldSource;
 import com.acikek.ended.edible.rule.destination.Destination;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Map;
 
 public interface RuleBuilder {
@@ -27,6 +29,11 @@ public interface RuleBuilder {
     default RuleBuilder addSource(Identifier world) {
         return addSource(world, true);
     }
+
+    /**
+     * @see RuleBuilder#addSource(Identifier, boolean)
+     */
+    RuleBuilder addSources(List<WorldSource> sources);
 
     /**
      * Adds a destination to this rule. Rules must have at least one destination.

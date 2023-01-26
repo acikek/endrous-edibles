@@ -12,9 +12,7 @@
       },
       "destinations": {
         "fountain": {
-          "x": 0,
-          "y": 100,
-          "z": 0,
+          "pos": [0, 100, 0],
           "message": "center"
         }
       }

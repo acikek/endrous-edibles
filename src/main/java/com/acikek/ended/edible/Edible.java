@@ -1,6 +1,7 @@
 package com.acikek.ended.edible;
 
 import com.acikek.ended.EndrousEdibles;
+import com.acikek.ended.api.builder.EdibleBuilder;
 import com.acikek.ended.edible.rule.EdibleRule;
 import com.acikek.ended.edible.rule.WorldSource;
 import com.google.gson.JsonElement;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -64,13 +64,12 @@ public record Edible(Identifier id, Ingredient edible, List<EdibleRule> rules) {
     }
 
     public static Edible fromJson(Identifier id, JsonObject obj) {
-        Ingredient edible = obj.has("edible") ? Ingredient.fromJson(obj.get("edible")) : null;
+        EdibleBuilder builder = EdibleBuilder.create()
+                .edible(obj.has("edible") ? Ingredient.fromJson(obj.get("edible")) : null);
         String langKeyId = id.getNamespace() + "." + id.getPath().replace('/', '.');
-        List<EdibleRule> rules = new ArrayList<>();
         for (JsonElement element : JsonHelper.getArray(obj, "rules")) {
-            EdibleRule rule = EdibleRule.fromJson(langKeyId, element.getAsJsonObject());
-            rules.add(rule);
+            builder.addRule(EdibleRule.fromJson(langKeyId, element.getAsJsonObject()));
         }
-        return new Edible(id, edible, rules);
+        return builder.build(id);
     }
 }

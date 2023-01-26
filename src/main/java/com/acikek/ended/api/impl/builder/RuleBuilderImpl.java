@@ -23,6 +23,12 @@ public class RuleBuilderImpl implements RuleBuilder {
     }
 
     @Override
+    public RuleBuilder addSources(List<WorldSource> sources) {
+        from.addAll(sources);
+        return this;
+    }
+
+    @Override
     public RuleBuilder addDestination(String name, Destination destination) {
         destinations.put(name, destination);
         return this;
