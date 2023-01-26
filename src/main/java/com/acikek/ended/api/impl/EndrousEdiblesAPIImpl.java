@@ -2,16 +2,25 @@ package com.acikek.ended.api.impl;
 
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.load.EdibleLoader;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class EndrousEdiblesAPIImpl {
 
     public static Map<Identifier, Edible> registeredEdibles = new HashMap<>();
     public static Map<Identifier, Edible> allEdibles = new HashMap<>();
+
+    public static class MatchData {
+        public long lastCheckTime;
+        public Edible edible;
+    }
+
+    public static Map<Item, MatchData> itemMatches = new HashMap<>();
 
     public static void registerEdible(Edible edible) {
         registeredEdibles.put(edible.id(), edible);
@@ -31,12 +40,18 @@ public class EndrousEdiblesAPIImpl {
         return edible;
     }
 
-    public static Edible getEdibleFromStack(ItemStack stack) {
-        for (Edible edible : allEdibles.values()) {
-            if (edible.edible() != null && edible.edible().test(stack)) {
-                return edible;
+    public static Optional<Edible> getEdibleFromItem(Item item) {
+        itemMatches.putIfAbsent(item, new MatchData());
+        MatchData data = itemMatches.get(item);
+        if (data.lastCheckTime < EdibleLoader.lastReloadTime) {
+            ItemStack stack = item.getDefaultStack();
+            for (Edible edible : allEdibles.values()) {
+                if (edible.edible() != null && edible.edible().test(stack)) {
+                    data.edible = edible;
+                }
             }
+            data.lastCheckTime = System.currentTimeMillis();
         }
-        return null;
+        return Optional.ofNullable(data.edible);
     }
 }
