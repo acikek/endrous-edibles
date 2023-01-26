@@ -1,0 +1,34 @@
+{
+  "edible": {
+    "item": "minecraft:potato"
+  },
+  "rules": [
+    {
+      "from": [
+        "!minecraft:the_end"
+      ],
+      "default": {
+        "world": "minecraft:the_end"
+      },
+      "destinations": {
+        "fountain": {
+          "x": 0,
+          "y": 100,
+          "z": 0,
+          "message": "center"
+        }
+      }
+    },
+    {
+      "from": [
+        "minecraft:the_end"
+      ],
+      "destinations": {
+        "overworld": {
+          "world": "minecraft:overworld",
+          "location": "player_spawn"
+        }
+      }
+    }
+  ]
+}
