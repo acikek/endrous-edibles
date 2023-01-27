@@ -3,13 +3,13 @@ package com.acikek.ended.edible.rule.destination;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -60,6 +60,6 @@ public record Location(Type type, BlockPos pos, RegistryKey<World> world) {
                     ? defaultLocation.world
                     : null;
         }
-        return RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(obj, "world")));
+        return RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(obj, "world")));
     }
 }

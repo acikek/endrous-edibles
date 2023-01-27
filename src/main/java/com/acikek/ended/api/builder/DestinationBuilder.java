@@ -4,12 +4,12 @@ import com.acikek.ended.api.impl.builder.DestinationBuilderImpl;
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.edible.rule.destination.Destination;
 import com.acikek.ended.edible.rule.destination.Location;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public interface DestinationBuilder {
@@ -28,7 +28,7 @@ public interface DestinationBuilder {
      * @see DestinationBuilder#world(RegistryKey)
      */
     default DestinationBuilder world(Identifier world) {
-        return world(RegistryKey.of(Registry.WORLD_KEY, world));
+        return world(RegistryKey.of(RegistryKeys.WORLD, world));
     }
 
     /**

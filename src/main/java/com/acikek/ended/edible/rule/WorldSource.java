@@ -2,8 +2,8 @@ package com.acikek.ended.edible.rule;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;

@@ -3,9 +3,9 @@ package com.acikek.ended.api.impl.builder;
 import com.acikek.ended.api.builder.DestinationBuilder;
 import com.acikek.ended.edible.rule.destination.Destination;
 import com.acikek.ended.edible.rule.destination.Location;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class DestinationBuilderImpl implements DestinationBuilder {
