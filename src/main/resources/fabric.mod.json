@@ -3,7 +3,7 @@
   "id": "ended",
   "version": "${version}",
   "name": "Endrous Edibles",
-  "description": "",
+  "description": "A teleportation engine with built-in consumable support ",
   "authors": [
     "acikek"
   ],
@@ -22,6 +22,6 @@
   "depends": {
     "fabricloader": ">=0.14.13",
     "fabric": "*",
-    "minecraft": "1.19.2"
+    "minecraft": ">=1.19 <=1.19.2"
   }
 }
