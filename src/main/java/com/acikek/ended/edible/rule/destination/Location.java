@@ -12,6 +12,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -24,6 +25,7 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
             case PLAYER_SPAWN -> player.getSpawnPointPosition() != null && player.getSpawnPointDimension() == destinationWorld.getRegistryKey()
                     ? player.getSpawnPointPosition()
                     : destinationWorld.getSpawnPos();
+            case MIRROR -> player.getBlockPos().withY(destinationWorld.getTopY(Heightmap.Type.WORLD_SURFACE, player.getBlockX(), player.getBlockZ()));
         };
     }
 
