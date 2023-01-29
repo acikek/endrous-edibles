@@ -1,9 +1,10 @@
 package com.acikek.ended.api.builder;
 
+import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.api.impl.builder.DestinationBuilderImpl;
+import com.acikek.ended.api.location.PositionProvider;
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.edible.rule.destination.Destination;
-import com.acikek.ended.edible.rule.destination.Location;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -32,9 +33,17 @@ public interface DestinationBuilder {
     }
 
     /**
-     * Sets the location type to {@link Location.Type#POSITION} with the given position.
+     * Sets the location type to {@link LocationType#POSITION} with the given position provider.
      */
-    DestinationBuilder location(BlockPos pos);
+    DestinationBuilder location(PositionProvider provider);
+
+    /**
+     * Provides a static {@link BlockPos} for the position callback.
+     * @see DestinationBuilder#location(PositionProvider)
+     */
+    default DestinationBuilder location(BlockPos pos) {
+        return location((world, player) -> pos);
+    }
 
     /**
      * @see DestinationBuilder#location(BlockPos)
@@ -44,14 +53,10 @@ public interface DestinationBuilder {
     }
 
     /**
-     * Sets the location type to {@link Location.Type#WORLD_SPAWN}. The player will always appear at the world's spawn.
+     * Sets the location type.<br>
+     * Use {@link DestinationBuilder#location(PositionProvider)} or its equivalents to set the type to {@link LocationType#POSITION} given a block position.
      */
-    DestinationBuilder worldSpawn();
-
-    /**
-     * Sets the location type to {@link Location.Type#PLAYER_SPAWN} The player will appear at their set spawn if it exists in the destination world; otherwise, they will appear at the world's spawn.
-     */
-    DestinationBuilder playerSpawn();
+    DestinationBuilder location(LocationType type);
 
     /**
      * @param text The message to display after teleportation

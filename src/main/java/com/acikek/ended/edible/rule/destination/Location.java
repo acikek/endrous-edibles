@@ -1,5 +1,7 @@
 package com.acikek.ended.edible.rule.destination;
 
+import com.acikek.ended.api.location.LocationType;
+import com.acikek.ended.api.location.PositionProvider;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -13,17 +15,11 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.EnumUtils;
 
-public record Location(Type type, BlockPos pos, RegistryKey<World> world) {
-
-    public enum Type {
-        POSITION,
-        WORLD_SPAWN,
-        PLAYER_SPAWN
-    }
+public record Location(LocationType type, PositionProvider pos, RegistryKey<World> world) {
 
     public BlockPos getPos(ServerWorld destinationWorld, ServerPlayerEntity player) {
         return switch (type) {
-            case POSITION -> pos;
+            case POSITION -> pos.getPosition(destinationWorld, player);
             case WORLD_SPAWN -> destinationWorld.getSpawnPos();
             case PLAYER_SPAWN -> player.getSpawnPointPosition() != null && player.getSpawnPointDimension() == destinationWorld.getRegistryKey()
                     ? player.getSpawnPointPosition()
@@ -42,9 +38,9 @@ public record Location(Type type, BlockPos pos, RegistryKey<World> world) {
         return new BlockPos(x, y, z);
     }
 
-    public static Type typeFromJson(boolean isDefault, Location defaultLocation, JsonObject obj) {
+    public static LocationType typeFromJson(boolean isDefault, Location defaultLocation, JsonObject obj) {
         String typeString = JsonHelper.getString(obj, "location", "");
-        Type type = EnumUtils.getEnumIgnoreCase(Type.class, typeString, isDefault ? null : Type.POSITION);
+        LocationType type = EnumUtils.getEnumIgnoreCase(LocationType.class, typeString, isDefault ? null : LocationType.POSITION);
         if (type == null && !isDefault) {
             if (defaultLocation != null && defaultLocation.type != null) {
                 return defaultLocation.type;
