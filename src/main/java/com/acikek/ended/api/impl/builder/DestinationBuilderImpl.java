@@ -1,32 +1,26 @@
 package com.acikek.ended.api.impl.builder;
 
 import com.acikek.ended.api.builder.DestinationBuilder;
+import com.acikek.ended.api.location.LocationType;
+import com.acikek.ended.api.location.PositionProvider;
 import com.acikek.ended.edible.rule.destination.Destination;
 import com.acikek.ended.edible.rule.destination.Location;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DestinationBuilderImpl implements DestinationBuilder {
 
-    public Location.Type type;
-    public BlockPos pos;
+    public LocationType type;
+    public PositionProvider pos;
     public RegistryKey<World> world;
     public Text message;
 
-    public void tryChangeType(Location.Type newType) {
+    public void tryChangeType(LocationType newType) {
         if (type != null) {
             throw new IllegalStateException("destination type is already " + type);
         }
         type = newType;
-    }
-
-    @Override
-    public DestinationBuilder location(BlockPos pos) {
-        this.pos = pos;
-        tryChangeType(Location.Type.POSITION);
-        return this;
     }
 
     @Override
@@ -36,14 +30,15 @@ public class DestinationBuilderImpl implements DestinationBuilder {
     }
 
     @Override
-    public DestinationBuilder worldSpawn() {
-        tryChangeType(Location.Type.WORLD_SPAWN);
+    public DestinationBuilder location(PositionProvider provider) {
+        pos = provider;
+        tryChangeType(LocationType.POSITION);
         return this;
     }
 
     @Override
-    public DestinationBuilder playerSpawn() {
-        tryChangeType(Location.Type.PLAYER_SPAWN);
+    public DestinationBuilder location(LocationType type) {
+        tryChangeType(type);
         return this;
     }
 

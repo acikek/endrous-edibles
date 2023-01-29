@@ -1,5 +1,6 @@
 package com.acikek.ended.edible.rule.destination;
 
+import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.api.builder.DestinationBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -30,13 +31,14 @@ public record Destination(Location location, Text message) {
     public static Destination fromJson(String langKeyId, String destinationName, boolean isDefault, Destination defaultDestination, JsonObject obj) {
         DestinationBuilder builder = DestinationBuilder.create();
         Location defaultLocation = defaultDestination != null ? defaultDestination.location : null;
-        Location.Type type = Location.typeFromJson(isDefault, defaultDestination != null ? defaultDestination.location : null, obj);
+        LocationType type = Location.typeFromJson(isDefault, defaultDestination != null ? defaultDestination.location : null, obj);
         // For default destination types. Non-default destinations would throw if the type was null in the previous call.
         if (type != null) {
-            switch (type) {
-                case POSITION -> builder.location(Location.getBlockPos(obj));
-                case WORLD_SPAWN -> builder.worldSpawn();
-                case PLAYER_SPAWN -> builder.playerSpawn();
+            if (type == LocationType.POSITION) {
+                builder.location(Location.getBlockPos(obj));
+            }
+            else {
+                builder.location(type);
             }
         }
         return builder

@@ -7,7 +7,11 @@
   "authors": [
     "acikek"
   ],
-  "contact": {},
+  "contact": {
+    "homepage": "https://modrinth.com/mod/ended",
+    "sources": "https://github.com/acikek/endrous-edibles",
+    "issues": "https://github.com/acikek/endrous-edibles/issues"
+  },
   "license": "MIT",
   "icon": "assets/ended/icon.png",
   "environment": "*",
