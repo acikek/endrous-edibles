@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface DestinationBuilder {
 
@@ -64,9 +65,9 @@ public interface DestinationBuilder {
     DestinationBuilder message(Text text);
 
     /**
-     * @deprecated use {@link DestinationBuilder#build()}
      * @param isDefault whether to check for a valid location type
      */
+    @ApiStatus.Internal
     Destination build(boolean isDefault);
 
     default Destination build() {

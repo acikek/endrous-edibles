@@ -35,7 +35,7 @@ public record Edible(Identifier id, Ingredient edible, List<EdibleRule> rules) {
     public TriggerResult trigger(ServerPlayerEntity player) {
         List<Pair<String, EdibleRule>> filtered = IntStream.range(0, rules.size())
                 .mapToObj(i -> new Pair<>("#" + (i + 1), rules.get(i)))
-                .filter(pair -> WorldSource.test(player.world, pair.getRight().from()))
+                .filter(pair -> WorldSource.test(player.getWorld(), pair.getRight().from()))
                 .toList();
         if (filtered.isEmpty()) {
             return TriggerResult.PASS;
@@ -46,7 +46,7 @@ public record Edible(Identifier id, Ingredient edible, List<EdibleRule> rules) {
         }
         var rule = filtered.get(0);
         var destinations = rule.getRight().destinations().entrySet().stream().toList();
-        var entry = destinations.get(player.world.random.nextInt(destinations.size()));
+        var entry = destinations.get(player.getWorld().random.nextInt(destinations.size()));
         RegistryKey<World> worldKey = entry.getValue().location().world();
         ServerWorld destinationWorld = player.server.getWorld(worldKey);
         if (destinationWorld == null) {
