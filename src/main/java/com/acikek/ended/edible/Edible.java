@@ -2,10 +2,13 @@ package com.acikek.ended.edible;
 
 import com.acikek.ended.EndrousEdibles;
 import com.acikek.ended.api.builder.EdibleBuilder;
+import com.acikek.ended.api.location.EdibleMode;
+import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.edible.rule.EdibleRule;
 import com.acikek.ended.edible.rule.WorldSource;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,11 +19,12 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.EnumUtils;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-public record Edible(Identifier id, Ingredient edible, List<EdibleRule> rules) {
+public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<EdibleRule> rules) {
 
     public enum TriggerResult {
         SUCCESS,
@@ -66,6 +70,14 @@ public record Edible(Identifier id, Ingredient edible, List<EdibleRule> rules) {
     public static Edible fromJson(Identifier id, JsonObject obj) {
         EdibleBuilder builder = EdibleBuilder.create()
                 .edible(obj.has("edible") ? Ingredient.fromJson(obj.get("edible")) : null);
+        String modeString = JsonHelper.getString(obj, "mode", null);
+        if (modeString != null) {
+            EdibleMode mode = EnumUtils.getEnumIgnoreCase(EdibleMode.class, modeString);
+            if (mode == null) {
+                throw new JsonSyntaxException("mode must be 'consume' or 'interact'");
+            }
+            builder.mode(mode);
+        }
         String langKeyId = id.getNamespace() + "." + id.getPath().replace('/', '.');
         for (JsonElement element : JsonHelper.getArray(obj, "rules")) {
             builder.addRule(EdibleRule.fromJson(langKeyId, element.getAsJsonObject()));

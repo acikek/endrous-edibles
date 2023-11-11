@@ -2,6 +2,7 @@ package com.acikek.ended.api.builder;
 
 import com.acikek.ended.api.EndrousEdiblesAPI;
 import com.acikek.ended.api.impl.builder.EdibleBuilderImpl;
+import com.acikek.ended.api.location.EdibleMode;
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.edible.rule.EdibleRule;
 import net.minecraft.recipe.Ingredient;
@@ -14,6 +15,12 @@ public interface EdibleBuilder {
     static EdibleBuilder create() {
         return new EdibleBuilderImpl();
     }
+
+    /**
+     * Sets the mode for this edible, or how it should be triggered when an ingredient is present.<br>
+     * Default is {@link EdibleMode#CONSUME}.
+     */
+    EdibleBuilder mode(EdibleMode mode);
 
     /**
      * Sets the ingredient matcher for this edible.<br>

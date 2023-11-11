@@ -42,8 +42,7 @@ public class EndrousEdiblesAPIImpl {
     }
 
     public static Optional<Edible> getEdibleFromItem(Item item) {
-        itemMatches.putIfAbsent(item, new MatchData());
-        MatchData data = itemMatches.get(item);
+        MatchData data = itemMatches.computeIfAbsent(item, k -> new MatchData());
         if (data.lastCheckTime < EdibleLoader.lastReloadTime) {
             ItemStack stack = item.getDefaultStack();
             for (Edible edible : allEdibles.values()) {

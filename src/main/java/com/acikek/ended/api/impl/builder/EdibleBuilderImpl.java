@@ -1,6 +1,7 @@
 package com.acikek.ended.api.impl.builder;
 
 import com.acikek.ended.api.builder.EdibleBuilder;
+import com.acikek.ended.api.location.EdibleMode;
 import com.acikek.ended.edible.Edible;
 import com.acikek.ended.edible.rule.EdibleRule;
 import net.minecraft.recipe.Ingredient;
@@ -12,8 +13,15 @@ import java.util.List;
 
 public class EdibleBuilderImpl implements EdibleBuilder {
 
+    public EdibleMode mode = EdibleMode.CONSUME;
     public Ingredient edible;
     public List<EdibleRule> rules = new ArrayList<>();
+
+    @Override
+    public EdibleBuilder mode(EdibleMode mode) {
+        this.mode = mode;
+        return this;
+    }
 
     @Override
     public EdibleBuilder edible(Ingredient ingredient) {
@@ -38,6 +46,6 @@ public class EdibleBuilderImpl implements EdibleBuilder {
         if (rules.isEmpty()) {
             throw new IllegalStateException("Edibles must have at least one rule");
         }
-        return new Edible(id, edible, rules);
+        return new Edible(id, mode, edible, rules);
     }
 }
