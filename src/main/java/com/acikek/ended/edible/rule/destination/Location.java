@@ -35,7 +35,7 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
             }
             // TODO: Make this actually work for nether.
             // TODO: Dimension coordinates scaling
-            case MIRROR -> PositionProvider.getFromBlockPos(destinationWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, player.getBlockPos()), player);
+            case MIRROR -> PositionProvider.getFromBlockPos(destinationWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, player.getBlockPos()), player);
         };
     }
 
