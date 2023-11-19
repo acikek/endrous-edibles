@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -38,17 +39,17 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
         };
     }
 
-    public static BlockPos getBlockPos(JsonElement element) {
+    public static Vec3d posFromJson(JsonElement element) {
         if (element.isJsonArray()) {
             JsonArray array = JsonHelper.asArray(element, "pos array");
-            return new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
+            return new Vec3d(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());
         }
         if (element.isJsonObject()) {
             JsonObject obj = JsonHelper.asObject(element, "pos object");
-            int x = JsonHelper.getInt(obj, "x");
-            int y = JsonHelper.getInt(obj, "y");
-            int z = JsonHelper.getInt(obj, "z");
-            return new BlockPos(x, y, z);
+            double x = JsonHelper.getDouble(obj, "x");
+            double y = JsonHelper.getDouble(obj, "y");
+            double z = JsonHelper.getDouble(obj, "z");
+            return new Vec3d(x, y, z);
         }
         throw new JsonSyntaxException("location must have a position (cannot be defaulted)");
     }

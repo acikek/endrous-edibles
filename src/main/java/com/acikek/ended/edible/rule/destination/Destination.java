@@ -32,7 +32,7 @@ public record Destination(Location location, Text message, SoundEvent sound) {
     public static DestinationBuilder fromJson(JsonObject obj, String langKeyId, String destinationName) {
         DestinationBuilder builder = DestinationBuilder.create();
         if (obj.has("pos")) {
-            builder.location(Location.getBlockPos(obj.get("pos")));
+            builder.location(Location.posFromJson(obj.get("pos")));
         }
         else {
             builder.location(Location.typeFromJson(obj.get("location")));
