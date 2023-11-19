@@ -15,6 +15,12 @@ public record EdibleRule(List<WorldSource> from, Map<String, Destination> destin
     public static EdibleRule fromJson(JsonObject obj, String langKeyId) {
         RuleBuilder builder = RuleBuilder.create()
                 .addSources(WorldSource.fromJson(JsonHelper.getArray(obj, "from")));
+        if (!obj.has("destinations")) {
+            Destination destination = Destination.fromJson(obj, langKeyId, "destination").build();
+            return builder
+                    .addDestination("destination", destination)
+                    .build();
+        }
         Destination defaultDestination = obj.has("default")
                 ? Destination.fromJson(JsonHelper.getObject(obj, "default"), langKeyId, "default").build(true)
                 : Destination.NULL;

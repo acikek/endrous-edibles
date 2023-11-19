@@ -81,8 +81,13 @@ public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<Edi
             builder.mode(mode);
         }
         String langKeyId = id.getNamespace() + "." + id.getPath().replace('/', '.');
-        for (JsonElement element : JsonHelper.getArray(obj, "rules")) {
-            builder.addRule(EdibleRule.fromJson(element.getAsJsonObject(), langKeyId));
+        if (obj.has("rules")) {
+            for (JsonElement element : JsonHelper.getArray(obj, "rules")) {
+                builder.addRule(EdibleRule.fromJson(element.getAsJsonObject(), langKeyId));
+            }
+        }
+        else {
+            builder.addRule(EdibleRule.fromJson(obj, langKeyId));
         }
         return builder.build(id);
     }
