@@ -39,19 +39,25 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
         };
     }
 
-    public static Vec3d posFromJson(JsonElement element) {
-        if (element.isJsonArray()) {
-            JsonArray array = JsonHelper.asArray(element, "pos array");
+    public static Vec3d posFromObj(JsonObject obj) {
+        if (JsonHelper.hasArray(obj, "pos")) {
+            JsonArray array = obj.getAsJsonArray("pos");
             return new Vec3d(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());
         }
-        if (element.isJsonObject()) {
-            JsonObject obj = JsonHelper.asObject(element, "pos object");
-            double x = JsonHelper.getDouble(obj, "x");
-            double y = JsonHelper.getDouble(obj, "y");
-            double z = JsonHelper.getDouble(obj, "z");
-            return new Vec3d(x, y, z);
+        double x = JsonHelper.getDouble(obj, "x");
+        double y = JsonHelper.getDouble(obj, "y");
+        double z = JsonHelper.getDouble(obj, "z");
+        return new Vec3d(x, y, z);
+    }
+
+    public static PositionProvider providerFromObj(JsonObject obj) {
+        Vec3d pos = posFromObj(obj);
+        if (!obj.has("yaw") && !obj.has("pitch")) {
+            return new PositionProvider.Position(pos);
         }
-        throw new JsonSyntaxException("location must have a position (cannot be defaulted)");
+        float yaw = JsonHelper.getFloat(obj, "yaw", 0.0f);
+        float pitch = JsonHelper.getFloat(obj, "pitch", 0.0f);
+        return new PositionProvider.Instance(new TeleportTarget(pos, Vec3d.ZERO, yaw, pitch));
     }
 
     public static LocationType typeFromJson(JsonElement element) {
