@@ -1,6 +1,5 @@
 package com.acikek.ended.edible.rule;
 
-import com.acikek.ended.api.builder.DestinationBuilder;
 import com.acikek.ended.api.builder.RuleBuilder;
 import com.acikek.ended.edible.rule.destination.Destination;
 import com.google.gson.JsonElement;
@@ -13,8 +12,10 @@ import java.util.Map;
 public record EdibleRule(List<WorldSource> from, Map<String, Destination> destinations) {
 
     public static EdibleRule fromJson(JsonObject obj, String langKeyId) {
-        RuleBuilder builder = RuleBuilder.create()
-                .addSources(WorldSource.fromJson(JsonHelper.getArray(obj, "from")));
+        RuleBuilder builder = RuleBuilder.create();
+        if (obj.has("from")) {
+            builder.addSources(WorldSource.fromJson(JsonHelper.getArray(obj, "from")));
+        }
         if (!obj.has("destinations")) {
             Destination destination = Destination.fromJson(obj, langKeyId, "destination").build();
             return builder
