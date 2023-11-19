@@ -4,10 +4,14 @@ import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.api.builder.DestinationBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public record Destination(Location location, Text message) {
+public record Destination(Location location, Text message, SoundEvent sound) {
+
+    public static final Destination NULL = new Destination(Location.NULL, null, null);
 
     public static Text getTypeMessage(String type, String langKeyId, String destinationName) {
         Text destinationText = Text.translatable("ended.destination." + langKeyId + "." + destinationName);
@@ -15,12 +19,9 @@ public record Destination(Location location, Text message) {
                 .styled(style -> style.withItalic(true).withFormatting(Formatting.GRAY));
     }
 
-    public static Text messageFromJson(String langKeyId, String destinationName, Destination defaultDestination, JsonObject obj) {
-        JsonElement element = obj.get("message");
-        if (element == null) {
-            return defaultDestination != null
-                    ? defaultDestination.message
-                    : null;
+    public static Text messageFromJson(JsonElement element, String langKeyId, String destinationName) {
+        if (element == null || element.isJsonNull()) {
+            return null;
         }
         if (element.isJsonPrimitive()) {
             return getTypeMessage(element.getAsString(), langKeyId, destinationName);
@@ -28,23 +29,17 @@ public record Destination(Location location, Text message) {
         return Text.Serializer.fromJson(element);
     }
 
-    public static Destination fromJson(String langKeyId, String destinationName, boolean isDefault, Destination defaultDestination, JsonObject obj) {
+    public static DestinationBuilder fromJson(JsonObject obj, String langKeyId, String destinationName) {
         DestinationBuilder builder = DestinationBuilder.create();
-        Location defaultLocation = defaultDestination != null ? defaultDestination.location : null;
-        LocationType type = Location.typeFromJson(isDefault, defaultDestination != null ? defaultDestination.location : null, obj);
-        // For default destination types. Non-default destinations would throw if the type was null in the previous call.
-        if (type != null) {
-            if (type == LocationType.POSITION) {
-                builder.location(Location.getBlockPos(obj));
-            }
-            else {
-                builder.location(type);
-            }
+        if (obj.has("pos")) {
+            builder.location(Location.getBlockPos(obj.get("pos")));
+        }
+        else {
+            builder.location(Location.typeFromJson(obj.get("location")));
         }
         return builder
-                .world(Location.worldFromJson(defaultLocation, obj))
-                .message(messageFromJson(langKeyId, destinationName, defaultDestination, obj))
-                // Deprecated for internal use
-                .build(isDefault);
+                .world(Location.worldFromJson(obj.get("world")))
+                .message(messageFromJson(obj.get("message"), langKeyId, destinationName));
+                //.sound(SoundEvents.)
     }
 }

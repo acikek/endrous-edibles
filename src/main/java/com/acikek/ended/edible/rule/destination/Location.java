@@ -3,6 +3,7 @@ package com.acikek.ended.edible.rule.destination;
 import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.api.location.PositionProvider;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.registry.RegistryKey;
@@ -18,6 +19,8 @@ import org.apache.commons.lang3.EnumUtils;
 
 public record Location(LocationType type, PositionProvider pos, RegistryKey<World> world) {
 
+    public static final Location NULL = new Location(LocationType.POSITION, null, null);
+
     public BlockPos getPos(ServerWorld destinationWorld, ServerPlayerEntity player) {
         return switch (type) {
             case POSITION -> pos.getPosition(destinationWorld, player);
@@ -29,35 +32,38 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
         };
     }
 
-    public static BlockPos getBlockPos(JsonObject obj) {
-        if (JsonHelper.hasArray(obj, "pos")) {
-            JsonArray array = JsonHelper.getArray(obj, "pos");
+    public static BlockPos getBlockPos(JsonElement element) {
+        if (element.isJsonArray()) {
+            JsonArray array = JsonHelper.asArray(element, "pos array");
             return new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
         }
-        int x = JsonHelper.getInt(obj, "x");
-        int y = JsonHelper.getInt(obj, "y");
-        int z = JsonHelper.getInt(obj, "z");
-        return new BlockPos(x, y, z);
+        if (element.isJsonObject()) {
+            JsonObject obj = JsonHelper.asObject(element, "pos object");
+            int x = JsonHelper.getInt(obj, "x");
+            int y = JsonHelper.getInt(obj, "y");
+            int z = JsonHelper.getInt(obj, "z");
+            return new BlockPos(x, y, z);
+        }
+        throw new JsonSyntaxException("location must have a position (cannot be defaulted)");
     }
 
-    public static LocationType typeFromJson(boolean isDefault, Location defaultLocation, JsonObject obj) {
-        String typeString = JsonHelper.getString(obj, "location", "");
-        LocationType type = EnumUtils.getEnumIgnoreCase(LocationType.class, typeString, isDefault ? null : LocationType.POSITION);
-        if (type == null && !isDefault) {
-            if (defaultLocation != null && defaultLocation.type != null) {
-                return defaultLocation.type;
-            }
-            throw new JsonSyntaxException("location must be 'position', 'world_spawn', or 'player_spawn'");
+    public static LocationType typeFromJson(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+        String typeString = JsonHelper.asString(element, "location type");
+        LocationType type = EnumUtils.getEnumIgnoreCase(LocationType.class, typeString, LocationType.POSITION);
+        if (type == null) {
+            throw new JsonSyntaxException("location must be 'position', 'world_spawn', 'player_spawn', or 'mirror'");
         }
         return type;
     }
 
-    public static RegistryKey<World> worldFromJson(Location defaultLocation, JsonObject obj) {
-        if (!JsonHelper.hasString(obj, "world")) {
-            return defaultLocation != null
-                    ? defaultLocation.world
-                    : null;
+    public static RegistryKey<World> worldFromJson(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
         }
-        return RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(obj, "world")));
+        String idString = JsonHelper.asString(element, "world id");
+        return RegistryKey.of(RegistryKeys.WORLD, new Identifier(idString));
     }
 }

@@ -8,6 +8,7 @@ import com.acikek.ended.edible.rule.destination.Destination;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -63,6 +64,17 @@ public interface DestinationBuilder {
      * @param text The message to display after teleportation
      */
     DestinationBuilder message(Text text);
+
+    /**
+     * @param event The sound to play after teleportation
+     */
+    DestinationBuilder sound(SoundEvent event);
+
+    /**
+     *
+     * @param destination The default destination values
+     */
+    DestinationBuilder withDefault(Destination destination);
 
     /**
      * @param isDefault whether to check for a valid location type

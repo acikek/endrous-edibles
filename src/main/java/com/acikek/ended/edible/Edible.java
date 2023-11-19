@@ -68,8 +68,10 @@ public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<Edi
     }
 
     public static Edible fromJson(Identifier id, JsonObject obj) {
-        EdibleBuilder builder = EdibleBuilder.create()
-                .edible(obj.has("edible") ? Ingredient.fromJson(obj.get("edible")) : null);
+        EdibleBuilder builder = EdibleBuilder.create();
+        if (obj.has("edible")) {
+            builder.edible(Ingredient.fromJson(obj.get("edible")));
+        }
         String modeString = JsonHelper.getString(obj, "mode", null);
         if (modeString != null) {
             EdibleMode mode = EnumUtils.getEnumIgnoreCase(EdibleMode.class, modeString);
@@ -80,7 +82,7 @@ public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<Edi
         }
         String langKeyId = id.getNamespace() + "." + id.getPath().replace('/', '.');
         for (JsonElement element : JsonHelper.getArray(obj, "rules")) {
-            builder.addRule(EdibleRule.fromJson(langKeyId, element.getAsJsonObject()));
+            builder.addRule(EdibleRule.fromJson(element.getAsJsonObject(), langKeyId));
         }
         return builder.build(id);
     }
