@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -21,14 +22,19 @@ public record Location(LocationType type, PositionProvider pos, RegistryKey<Worl
 
     public static final Location NULL = new Location(LocationType.POSITION, null, null);
 
-    public BlockPos getPos(ServerWorld destinationWorld, ServerPlayerEntity player) {
+    public TeleportTarget getPos(ServerWorld destinationWorld, ServerPlayerEntity player) {
         return switch (type) {
             case POSITION -> pos.getPosition(destinationWorld, player);
-            case WORLD_SPAWN -> destinationWorld.getSpawnPos();
-            case PLAYER_SPAWN -> player.getSpawnPointPosition() != null && player.getSpawnPointDimension() == destinationWorld.getRegistryKey()
-                    ? player.getSpawnPointPosition()
-                    : destinationWorld.getSpawnPos();
-            case MIRROR -> player.getBlockPos().withY(destinationWorld.getTopY(Heightmap.Type.WORLD_SURFACE, player.getBlockX(), player.getBlockZ()));
+            case WORLD_SPAWN -> PositionProvider.getFromBlockPos(destinationWorld.getSpawnPos(), player);
+            case PLAYER_SPAWN -> {
+                BlockPos pos = player.getSpawnPointPosition() != null && player.getSpawnPointDimension() == destinationWorld.getRegistryKey()
+                        ? player.getSpawnPointPosition()
+                        : destinationWorld.getSpawnPos();
+                yield PositionProvider.getFromBlockPos(pos, player);
+            }
+            // TODO: Make this actually work for nether.
+            // TODO: Dimension coordinates scaling
+            case MIRROR -> PositionProvider.getFromBlockPos(destinationWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, player.getBlockPos()), player);
         };
     }
 

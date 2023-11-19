@@ -3,7 +3,6 @@ package com.acikek.ended.edible;
 import com.acikek.ended.EndrousEdibles;
 import com.acikek.ended.api.builder.EdibleBuilder;
 import com.acikek.ended.api.location.EdibleMode;
-import com.acikek.ended.api.location.LocationType;
 import com.acikek.ended.edible.rule.EdibleRule;
 import com.acikek.ended.edible.rule.WorldSource;
 import com.google.gson.JsonElement;
@@ -16,8 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -58,9 +56,9 @@ public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<Edi
             EndrousEdibles.LOGGER.error(source + " tried to teleport to invalid world '" + worldKey.getValue() + "'!");
             return TriggerResult.FAIL;
         }
-        BlockPos blockPos = entry.getValue().location().getPos(destinationWorld, player);
-        Vec3d pos = Vec3d.ofBottomCenter(blockPos);
-        player.teleport(destinationWorld, pos.x, pos.y, pos.z, player.getYaw(), player.getPitch());
+        TeleportTarget target = entry.getValue().location().getPos(destinationWorld, player);
+        // FabricDimensions call has a pre-existing sound effect
+        player.teleport(destinationWorld, target.position.getX(), target.position.getY(), target.position.getZ(), target.yaw, target.pitch);
         if (entry.getValue().message() != null) {
             player.sendMessage(entry.getValue().message());
         }

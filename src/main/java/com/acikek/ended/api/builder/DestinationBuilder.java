@@ -12,6 +12,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -44,14 +46,53 @@ public interface DestinationBuilder {
      * @see DestinationBuilder#location(PositionProvider)
      */
     default DestinationBuilder location(BlockPos pos) {
-        return location((world, player) -> pos);
+        return location(Vec3d.ofBottomCenter(pos));
     }
 
     /**
      * @see DestinationBuilder#location(BlockPos)
+     * @deprecated in favor of {@link DestinationBuilder#location(double, double, double)}
      */
+    @Deprecated
     default DestinationBuilder location(int x, int y, int z) {
         return location(new BlockPos(x, y, z));
+    }
+
+    /**
+     * Provides a static {@link TeleportTarget} for the position callback.
+     * @see DestinationBuilder#location(PositionProvider)
+     */
+    default DestinationBuilder location(TeleportTarget target) {
+        return location(new PositionProvider.Instance(target));
+    }
+
+    /**
+     * @see DestinationBuilder#location(TeleportTarget)
+     */
+    default DestinationBuilder location(Vec3d pos, float yaw, float pitch) {
+        return location(new TeleportTarget(pos, Vec3d.ZERO, yaw, pitch));
+    }
+
+    /**
+     * @see DestinationBuilder#location(TeleportTarget)
+     */
+    default DestinationBuilder location(double x, double y, double z, float yaw, float pitch) {
+        return location(new TeleportTarget(new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
+    }
+
+    /**
+     * Provides a static {@link Vec3d} for the position callback.
+     * @see DestinationBuilder#location(PositionProvider)
+     */
+    default DestinationBuilder location(Vec3d pos) {
+        return location(new PositionProvider.Position(pos));
+    }
+
+    /**
+     * @see DestinationBuilder#location(Vec3d)
+     */
+    default DestinationBuilder location(double x, double y, double z) {
+        return location(new Vec3d(x, y, z));
     }
 
     /**
