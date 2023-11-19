@@ -5,13 +5,18 @@ import com.acikek.ended.api.builder.EdibleBuilder;
 import com.acikek.ended.api.location.EdibleMode;
 import com.acikek.ended.edible.rule.EdibleRule;
 import com.acikek.ended.edible.rule.WorldSource;
+import com.acikek.ended.edible.rule.destination.Destination;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Pair;
@@ -23,6 +28,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<EdibleRule> rules) {
+
+    public static final Identifier TELEPORT_SOUND = EndrousEdibles.id("teleport_sound");
 
     public enum TriggerResult {
         SUCCESS,
@@ -49,18 +56,24 @@ public record Edible(Identifier id, EdibleMode mode, Ingredient edible, List<Edi
         var rule = filtered.get(0);
         var destinations = rule.getRight().destinations().entrySet().stream().toList();
         var entry = destinations.get(player.getWorld().random.nextInt(destinations.size()));
-        RegistryKey<World> worldKey = entry.getValue().location().world();
+        Destination destination = entry.getValue();
+        RegistryKey<World> worldKey = destination.location().world();
         ServerWorld destinationWorld = player.server.getWorld(worldKey);
         if (destinationWorld == null) {
             String source = "Destination '" + entry.getKey() + "' in rule " + rule.getLeft() + " of edible '" + id + "'";
             EndrousEdibles.LOGGER.error(source + " tried to teleport to invalid world '" + worldKey.getValue() + "'!");
             return TriggerResult.FAIL;
         }
-        TeleportTarget target = entry.getValue().location().getPos(destinationWorld, player);
+        TeleportTarget target = destination.location().getPos(destinationWorld, player);
         // FabricDimensions call has a pre-existing sound effect
         player.teleport(destinationWorld, target.position.getX(), target.position.getY(), target.position.getZ(), target.yaw, target.pitch);
-        if (entry.getValue().message() != null) {
-            player.sendMessage(entry.getValue().message());
+        if (destination.message() != null) {
+            player.sendMessage(destination.message());
+        }
+        if (destination.sound() != null) {
+            PacketByteBuf buf = PacketByteBufs.create();
+            destination.sound().writeBuf(buf);
+            ServerPlayNetworking.send(player, TELEPORT_SOUND, buf);
         }
         return TriggerResult.SUCCESS;
     }

@@ -46,7 +46,7 @@ public class DestinationBuilderImpl implements DestinationBuilder {
     @Override
     public DestinationBuilder sound(SoundEvent event) {
         sound = event;
-        return null;
+        return this;
     }
 
     @Override

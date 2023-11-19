@@ -18,6 +18,9 @@
   "entrypoints": {
     "main": [
       "com.acikek.ended.EndrousEdibles"
+    ],
+    "client": [
+      "com.acikek.ended.client.EndrousEdiblesClient"
     ]
   },
   "mixins": [
